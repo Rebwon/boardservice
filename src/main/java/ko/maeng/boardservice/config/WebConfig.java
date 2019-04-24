@@ -33,6 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
         resolver.setSuffix(".html");
         resolver.setCache(true);
         resolver.setCacheLimit(8192);
+        resolver.setExposeSessionAttributes(true);
 
         registry.viewResolver(resolver);
     }

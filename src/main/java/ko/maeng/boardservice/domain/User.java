@@ -10,6 +10,7 @@ public class User {
 
     @Column(nullable = false, length = 20)
     private String userId;
+
     private String password;
     private String name;
     private String email;
@@ -28,6 +29,16 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void update(User newUser) {
+        this.password = newUser.password;
+        this.name = newUser.name;
+        this.email = newUser.email;
     }
 
     @Override
