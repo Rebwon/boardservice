@@ -35,20 +35,20 @@ public class UserController {
             return "redirect:/users/loginForm";
         }
 
-        if(!password.equals(user.getPassword())){
+        if(!user.matchPassword(password)){
             log.info("Login Failure!");
             return "redirect:/users/loginForm";
         }
 
         log.info("Login Success!");
-        session.setAttribute("user", user);
+        session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
 
         return "redirect:/";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session){
-        session.removeAttribute("user");
+        session.removeAttribute(HttpSessionUtils.USER_SESSION_KEY);
         log.info("Logout!");
         return "redirect:/";
     }
@@ -71,16 +71,34 @@ public class UserController {
         return "/user/list";
     }
 
-    @GetMapping("{id}/form")
-    public String updateForm(@PathVariable Long id, Model model){
+    @GetMapping("/{id}/form")
+    public String updateForm(@PathVariable Long id, Model model, HttpSession session){
+        if(!HttpSessionUtils.isLogin(session)){
+            return "redirect:/users/loginForm";
+        }
+
+        User sessionedUser = (User) HttpSessionUtils.getUserFromSession(session);
+        if(!sessionedUser.matchId(id)){
+            throw new IllegalStateException("You can't update the another user!");
+        }
+
         model.addAttribute("user", userRepository.findById(id).get());
         return "/user/updateForm";
     }
 
     @PutMapping("/{id}")
-    public String update(@PathVariable Long id, User newUser){
+    public String update(@PathVariable Long id, User updatedUser, HttpSession session){
+        if(!HttpSessionUtils.isLogin(session)){
+            return "redirect:/users/loginForm";
+        }
+
+        User sessionedUser = (User) HttpSessionUtils.getUserFromSession(session);
+        if(!id.equals(sessionedUser.getId())){
+            throw new IllegalStateException("You can't update the another user!");
+        }
+
         User user = userRepository.findById(id).get();
-        user.update(newUser);
+        user.update(updatedUser);
         userRepository.save(user);
         return "redirect:/users";
     }
