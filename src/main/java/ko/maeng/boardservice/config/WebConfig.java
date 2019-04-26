@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    // Mustache Template Loader 구현 : {{> }} 태그 사용 시 인식하지 못하는 에러 해결.
     private static Mustache.TemplateLoader mustacheTemplateLoader(){
         ResourceLoader resourceLoader = new DefaultResourceLoader();
         String prefix = "classpath:/templates/";
@@ -22,6 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
                 resourceLoader.getResource(prefix + name + ".html").getInputStream(), charset);
     }
 
+    // Mustache ViewResolver 설정.
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         Mustache.Compiler compiler = Mustache.compiler().withLoader(mustacheTemplateLoader());
