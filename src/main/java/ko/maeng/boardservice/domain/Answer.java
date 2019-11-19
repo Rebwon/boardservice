@@ -3,39 +3,34 @@ package ko.maeng.boardservice.domain;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Entity
-public class Question{
+public class Answer {
 
-    //Entity는 반드시 파라미터가 없는 (no-arg) public 혹은 protected 생성자가 있어야 한다.
-    //하이버네이트에서 리플렉션을 통해 객체를 생성할 때 기본 생성자를 호출하게 되는데,
-    //사용자가 생성자를 재정의해서 사용할 경우 해당 엔티티의 객체를 생성할 수 없게 된다.
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
     private User writer;
 
-    private String title;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_to_question"))
+    private Question question;
 
-    //@Lob은 length가 긴 데이터가 필요할 경우 사용.
     @Lob
     private String contents;
 
     private LocalDateTime createDate;
 
-    @OneToMany(mappedBy = "question")
-    @OrderBy("id ASC")
-    private List<Answer> answers;
+    public Answer(){
 
-    public Question(){}
+    }
 
-    public Question(User writer, String title, String contents) {
+    public Answer(User writer, Question question, String contents){
         this.writer = writer;
-        this.title = title;
+        this.question = question;
         this.contents = contents;
         this.createDate = LocalDateTime.now();
     }
@@ -45,17 +40,6 @@ public class Question{
             return "";
         }
         return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
-    }
-
-
-    public void update(String title, String contents) {
-        this.title = title;
-        this.contents = contents;
-        this.createDate = LocalDateTime.now();
-    }
-
-    public boolean isSameWriter(User loginUser) {
-        return this.writer.equals(loginUser);
     }
 
     @Override
@@ -74,12 +58,22 @@ public class Question{
             return false;
         if(getClass() != obj.getClass())
             return false;
-        Question other = (Question) obj;
+        Answer other = (Answer) obj;
         if(id == null){
             if(other.id != null)
                 return false;
         } else if(!id.equals(other.id))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Answer{" +
+                "id=" + id +
+                ", writer=" + writer +
+                ", contents='" + contents + '\'' +
+                ", createDate=" + createDate +
+                '}';
     }
 }
