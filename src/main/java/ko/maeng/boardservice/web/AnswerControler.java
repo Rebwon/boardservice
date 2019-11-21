@@ -23,13 +23,19 @@ public class AnswerControler {
         this.questionRepository = question;
     }
 
+    private Result valid(HttpSession session, Question question){
+        if(!HttpSessionUtils.isLogin(session)){
+            return Result.fail("로그인이 필요합니다");
+        }
+        User loginUser = (User) HttpSessionUtils.getUserFromSession(session);
+        if(!question.isSameWriter(loginUser)){
+            return Result.fail("자신이 쓴 글만 수정, 삭제가 가능합니다.");
+        }
+        return Result.ok();
+    }
+
     @PostMapping("")
     public String create(@PathVariable Long questionId, String contents, HttpSession session){
-        if(!HttpSessionUtils.isLogin(session)){
-            log.info("Login Please!");
-            return "/users/loginForm";
-        }
-
         User loginUser = (User) HttpSessionUtils.getUserFromSession(session);
         Question question = questionRepository.findById(questionId).get();
         Answer answer = new Answer(loginUser, question, contents);

@@ -7,8 +7,7 @@ import java.time.format.DateTimeFormatter;
 @Entity
 public class Answer {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -24,9 +23,7 @@ public class Answer {
 
     private LocalDateTime createDate;
 
-    public Answer(){
-
-    }
+    public Answer(){}
 
     public Answer(User writer, Question question, String contents){
         this.writer = writer;

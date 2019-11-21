@@ -2,9 +2,8 @@ package ko.maeng.boardservice.web;
 
 import ko.maeng.boardservice.domain.Question;
 import ko.maeng.boardservice.domain.QuestionRepository;
+import ko.maeng.boardservice.domain.Result;
 import ko.maeng.boardservice.domain.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,27 +14,34 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/questions")
 public class QuestionController {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final QuestionRepository questionRepository;
 
     public QuestionController(QuestionRepository client){
         this.questionRepository = client;
     }
 
+    private Result valid(HttpSession session, Question question){
+        if(!HttpSessionUtils.isLogin(session)){
+            return Result.fail("로그인이 필요합니다");
+        }
+        User loginUser = (User) HttpSessionUtils.getUserFromSession(session);
+        if(!question.isSameWriter(loginUser)){
+            return Result.fail("자신이 쓴 글만 수정, 삭제가 가능합니다.");
+        }
+        return Result.ok();
+    }
+
     @GetMapping("/form")
     public String form(HttpSession session){
         if(!HttpSessionUtils.isLogin(session)){
-            log.info("Login Please!");
             return "/users/loginForm";
         }
-
         return "/qna/form";
     }
 
     @PostMapping("")
     public String create(String title, String contents, HttpSession session){
         if(!HttpSessionUtils.isLogin(session)){
-            log.info("Login Please!");
             return "/users/loginForm";
         }
 
@@ -55,49 +61,37 @@ public class QuestionController {
 
     @GetMapping("/{id}/form")
     public String updateForm(@PathVariable Long id, Model model, HttpSession session){
-        if(!HttpSessionUtils.isLogin(session)){
-            log.info("Login Please!");
-            return "/users/loginForm";
-        }
-        User loginUser = (User) HttpSessionUtils.getUserFromSession(session);
         Question question = questionRepository.findById(id).get();
-        if(!question.isSameWriter(loginUser)){
-            return "/users/loginForm";
+        Result result = valid(session, question);
+        if(!result.isValid()){
+            model.addAttribute("errorMessage", result.getErrorMessage());
+            return "/user/login";
         }
-
         model.addAttribute("question", question);
         return "/qna/updateForm";
     }
 
     @PutMapping("/{id}")
-    public String update(@PathVariable Long id, String title, String contents, HttpSession session){
-        if(!HttpSessionUtils.isLogin(session)){
-            log.info("Login Please!");
-            return "/users/loginForm";
-        }
-        User loginUser = (User) HttpSessionUtils.getUserFromSession(session);
+    public String update(@PathVariable Long id, String title, String contents, Model model, HttpSession session){
         Question question = questionRepository.findById(id).get();
-        if(!question.isSameWriter(loginUser)){
-            return "/users/loginForm";
+        Result result = valid(session, question);
+        if(!result.isValid()){
+            model.addAttribute("errorMessage", result.getErrorMessage());
+            return "/user/login";
         }
-
         question.update(title, contents);
         questionRepository.save(question);
         return String.format("redirect:/questions/%d", id);
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id, HttpSession session){
-        if(!HttpSessionUtils.isLogin(session)){
-            log.info("Login Please!");
-            return "/users/loginForm";
-        }
-        User loginUser = (User) HttpSessionUtils.getUserFromSession(session);
+    public String delete(@PathVariable Long id, Model model, HttpSession session){
         Question question = questionRepository.findById(id).get();
-        if(!question.isSameWriter(loginUser)){
-            return "/users/loginForm";
+        Result result = valid(session, question);
+        if(!result.isValid()){
+            model.addAttribute("errorMessage", result.getErrorMessage());
+            return "/user/login";
         }
-
         questionRepository.deleteById(id);
         return "redirect:/";
     }
