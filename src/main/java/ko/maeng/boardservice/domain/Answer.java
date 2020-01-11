@@ -1,5 +1,7 @@
 package ko.maeng.boardservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,17 +10,21 @@ import java.time.format.DateTimeFormatter;
 public class Answer {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty
     private Long id;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_writer"))
+    @JsonProperty
     private User writer;
 
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_to_question"))
+    @JsonProperty
     private Question question;
 
     @Lob
+    @JsonProperty
     private String contents;
 
     private LocalDateTime createDate;
@@ -37,6 +43,10 @@ public class Answer {
             return "";
         }
         return createDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss"));
+    }
+
+    public boolean isSameWriter(User loginUser) {
+        return loginUser.equals(this.writer);
     }
 
     @Override

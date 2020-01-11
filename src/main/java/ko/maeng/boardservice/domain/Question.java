@@ -1,5 +1,7 @@
 package ko.maeng.boardservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,22 +15,26 @@ public class Question{
     //사용자가 생성자를 재정의해서 사용할 경우 해당 엔티티의 객체를 생성할 수 없게 된다.
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
+    @JsonProperty
     private User writer;
 
+    @JsonProperty
     private String title;
 
     //@Lob은 length가 긴 데이터가 필요할 경우 사용.
     @Lob
+    @JsonProperty
     private String contents;
 
     private LocalDateTime createDate;
 
     @OneToMany(mappedBy = "question")
-    @OrderBy("id ASC")
+    @OrderBy("id DESC")
     private List<Answer> answers;
 
     public Question(){}

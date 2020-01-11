@@ -1,5 +1,8 @@
 package ko.maeng.boardservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 
 @Entity
@@ -7,13 +10,20 @@ public class User {
 
     // strategy = GenerationType.IDENTITY : Auto-increment
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty
     private Long id;
 
     @Column(nullable = false, length = 20, unique = true)
+    @JsonProperty
     private String userId;
 
+    @JsonIgnore
     private String password;
+
+    @JsonProperty
     private String name;
+
+    @JsonProperty
     private String email;
 
     public void setUserId(String userId) {
