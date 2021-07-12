@@ -29,6 +29,10 @@ public class BaseEntity {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getFormattedCreateDate(){
         return getFormattedDate(createdDate, "yyyy.MM.dd HH:mm:ss");
     }

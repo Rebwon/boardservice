@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
+@DynamicUpdate
 public class User extends BaseEntity{
 
     @Column(nullable = false, length = 20, unique = true)
@@ -42,6 +44,10 @@ public class User extends BaseEntity{
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getUserId() {

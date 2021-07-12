@@ -31,12 +31,12 @@ public class UserController {
         User user = userRepository.findByUserId(userId);
 
         if(user == null){
-            log.info("Login Failure!");
+            log.info("Login Failure! user is null");
             return "redirect:/users/loginForm";
         }
 
         if(!user.matchPassword(password)){
-            log.info("Login Failure!");
+            log.info("Login Failure! password is not matched");
             return "redirect:/users/loginForm";
         }
 
