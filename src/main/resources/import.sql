@@ -5,3 +5,5 @@ insert into USER(ID, USER_ID, PASSWORD, NAME, EMAIL, created_date) VALUES(3, 'je
 insert into QUESTION(ID, TITLE, CONTENTS, WRITER_ID, created_date, COUNT_OF_ANSWER) VALUES(1, '앞으로의 추세는 스프링 WebFlux를 활용한 비동기 프로그래밍!', '비동기 프로그래밍', 1, now(), 0);
 insert into QUESTION(ID, TITLE, CONTENTS, WRITER_ID, created_date, COUNT_OF_ANSWER) VALUES(2, '요즘 아이들이 제일 좋아하는 캐릭터는 헬로키티!', '헬로 키티 짱짱', 2, now(), 0);
 insert into QUESTION(ID, TITLE, CONTENTS, WRITER_ID, created_date, COUNT_OF_ANSWER) VALUES(3, '우아한 형제들 백엔드 프로그래머로 입사해보자!!', 'SpringBoot와 JPA 그리고 QueryDSL을 마스터해보자.', 3, now(), 0);
+
+insert into ANSWER(ID, CONTENTS, QUESTION_ID, WRITER_ID, CREATED_DATE) VALUES(1, '우형 프로그래머가 되려면 어떻게 해야할까?', 3, 2, now());
